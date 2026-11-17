@@ -1,4 +1,14 @@
-# Built files go in GitHub Releases, not the repo
+# Build output
+bin/
+obj/
+out/
+dist/
 *.exe
 *.pdb
 *.landrop-part
+
+# Editors
+.vs/
+.vscode/
+*.user
+.DS_Store

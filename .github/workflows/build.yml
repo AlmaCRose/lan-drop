@@ -1,0 +1,91 @@
+name: Build and test
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Windows, os: windows-latest }
+          - { name: macOS, os: macos-latest }
+          - { name: Linux, os: ubuntu-latest }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Transfer tests
+        run: dotnet run --project tests/LanDrop.Tests -c Release
+
+      - name: Build the app
+        run: dotnet build src/LanDrop.App -c Release
+
+      - name: Install a virtual screen
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y xvfb libice6 libsm6 libfontconfig1
+
+      - name: Open the app and take a screenshot
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          app="src/LanDrop.App/bin/Release/net9.0/LanDrop.dll"
+          shot="screenshot-${{ matrix.name }}.png"
+          if [ "$RUNNER_OS" = Linux ]; then
+            xvfb-run -a dotnet "$app" --smoke-test --screenshot "$shot"
+          else
+            dotnet "$app" --smoke-test --screenshot "$shot"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshot-${{ matrix.name }}
+          path: screenshot-*.png
+          if-no-files-found: ignore
+
+  release:
+    name: Publish for ${{ matrix.name }}
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Windows, os: windows-latest, target: windows }
+          - { name: macOS, os: macos-latest, target: macos }
+          - { name: Linux, os: ubuntu-latest, target: linux }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build the downloads
+        shell: bash
+        run: packaging/publish.sh ${{ matrix.target }}
+
+      - name: Attach them to the release
+        shell: bash
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --title "LAN Drop ${TAG#v}" --notes-file packaging/release-notes.md \
+            || gh release view "$TAG" >/dev/null
+          gh release upload "$TAG" dist/* --clobber

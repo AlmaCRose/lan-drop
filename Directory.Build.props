@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <Version>3.0.0</Version>
+    <Product>LAN Drop</Product>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+</Project>

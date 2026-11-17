@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>LAN Drop</string>
+    <key>CFBundleDisplayName</key>
+    <string>LAN Drop</string>
+    <key>CFBundleIdentifier</key>
+    <string>io.github.almacrose.landrop</string>
+    <key>CFBundleExecutable</key>
+    <string>LanDrop</string>
+    <key>CFBundleIconFile</key>
+    <string>LanDrop</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>__VERSION__</string>
+    <key>CFBundleVersion</key>
+    <string>__VERSION__</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>12.0</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>LAN Drop connects to the other computer on your network to send and receive files.</string>
+</dict>
+</plist>
