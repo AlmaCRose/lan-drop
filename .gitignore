@@ -1,0 +1,4 @@
+# Built files go in GitHub Releases, not the repo
+*.exe
+*.pdb
+*.landrop-part
